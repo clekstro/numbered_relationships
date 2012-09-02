@@ -50,8 +50,7 @@ But there's also a larger issue here: jokes are only one possible association.  
 Jester model to include, say, music_instruments -- and to be able to filter on their amount --
 we're back at square one, writing another module for each association.
 
-This gem provides relief. Instead of defining modules with hard-coded method names and queries, it uses the ActiveRecord's reflection capabilities to enable amount-based filtering on all modelsk
-every 
+This gem provides relief. Instead of defining modules with hard-coded method names and queries, it uses the ActiveRecord's reflection capabilities to enable amount-based filtering on all models and, in the future, their associations:
 ```ruby
 Joker.with_at_least(2, :music_instruments)
 Joker.with_at_least(200, :jokes)
