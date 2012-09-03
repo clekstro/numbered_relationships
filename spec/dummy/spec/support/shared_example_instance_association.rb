@@ -63,7 +63,7 @@ shared_examples_for "an instance-based association filter" do |klass, first_asso
       eval("instance_with_more.#{first_assoc.to_s}.with_at_most(3, second_assoc)").should include(j1)
     end
   end
-  context "with_exactly" do
+  context "#with_exactly" do
     it "responds with empty array when no has_many objects" do
       eval("instance_with_more.#{first_assoc.to_s}.with_at_most(1, second_assoc)").should == []
     end
@@ -83,7 +83,7 @@ shared_examples_for "an instance-based association filter" do |klass, first_asso
       eval("instance_with_more.#{first_assoc.to_s}.with_exactly(2, second_assoc)").should == []
     end
   end
-  context "without" do
+  context "#without" do
     it "return objects with non n factory_name counts (+/-) and none with n" do
       j1 = FactoryGirl.create(factory_name)
       l1 = FactoryGirl.create(sec_factory)
@@ -97,19 +97,23 @@ shared_examples_for "an instance-based association filter" do |klass, first_asso
       eval("instance_with_more.#{first_assoc.to_s}.without(2, second_assoc)").should == [j1]
     end
   end
-  # context "with_more_than" do
-  #   it "not return objects with less than or equal to n jokes" do
-  #     klass.with_more_than(0, first_assoc).should_not include(instance_with_more, instance_with_less)
-  #     j1 = FactoryGirl.create(factory_name)
-  #     eval("instance_with_more.#{first_assoc.to_s} << j1")
-  #     klass.with_more_than(1, first_assoc).should_not include(instance_with_more, instance_with_less)
-  #   end
-  #   it "return objects with more than n jokes" do
-  #     j1 = FactoryGirl.create(factory_name)
-  #     eval("instance_with_more.#{first_assoc.to_s} << j1")
-  #     klass.with_more_than(0, first_assoc).should include(instance_with_more)
-  #   end
-  # end
+  context "#with_more_than" do
+    it "not return objects with less than or equal to n jokes" do
+      j1 = FactoryGirl.create(factory_name)
+      l1 = FactoryGirl.create(sec_factory)
+      eval("instance_with_more.#{first_assoc.to_s}.with_more_than(1, second_assoc)").should == []
+      eval("j1.#{second_assoc.to_s} << [l1]")
+      eval("instance_with_more.#{first_assoc.to_s} << j1")
+      eval("instance_with_more.#{first_assoc.to_s}.with_more_than(1, second_assoc)").should == []
+    end
+    it "return objects with more than n jokes" do
+      j1 = FactoryGirl.create(factory_name)
+      l1 = FactoryGirl.create(sec_factory)
+      eval("j1.#{second_assoc.to_s} << [l1]")
+      eval("instance_with_more.#{first_assoc.to_s} << j1")
+      eval("instance_with_more.#{first_assoc.to_s}.with_more_than(0, second_assoc)").should == [j1]
+    end
+  end
   # context "with_less_than" do
   #   it "not return objects with more than or having n jokes" do
   #     klass.with_less_than(0, first_assoc).should_not include(instance_with_more, instance_with_less)
