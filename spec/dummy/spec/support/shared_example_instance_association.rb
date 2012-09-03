@@ -63,23 +63,26 @@ shared_examples_for "an instance-based association filter" do |klass, first_asso
       eval("instance_with_more.#{first_assoc.to_s}.with_at_most(3, second_assoc)").should include(j1)
     end
   end
-  # context "with_exactly" do
-  #   it "respond with empty array when no has_many objects" do
-  #     klass.with_exactly(1, first_assoc).should == []
-  #   end
-  #   it "show results with exactly n jokes" do
-  #     j1 = FactoryGirl.create(factory_name)
-  #     eval("instance_with_more.#{first_assoc.to_s} << j1")
-  #     klass.with_exactly(1, first_assoc).should include(instance_with_more)
-  #   end
-  #   it "not show jesters with more or less than n" do
-  #     klass.with_exactly(1, first_assoc).should_not include(instance_with_less)
-  #     j1 = FactoryGirl.create(factory_name)
-  #     j2 = FactoryGirl.create(factory_name)
-  #     eval("instance_with_more.#{first_assoc.to_s} << [j1, j2]")
-  #     klass.with_exactly(1, first_assoc).should_not include(instance_with_more)
-  #   end
-  # end
+  context "with_exactly" do
+    it "responds with empty array when no has_many objects" do
+      eval("instance_with_more.#{first_assoc.to_s}.with_at_most(1, second_assoc)").should == []
+    end
+    it "shows results when exactly n #{second_assoc} present" do
+      j1 = FactoryGirl.create(factory_name)
+      l1 = FactoryGirl.create(sec_factory)
+      eval("j1.#{second_assoc.to_s} << [l1]")
+      eval("instance_with_more.#{first_assoc.to_s} << j1")
+      eval("instance_with_more.#{first_assoc.to_s}.with_exactly(1, second_assoc)").should include(j1)
+    end
+    it "shows no results when only more or less than n #{second_assoc}" do
+      j1 = FactoryGirl.create(factory_name)
+      l1 = FactoryGirl.create(sec_factory)
+      eval("j1.#{second_assoc.to_s} << [l1]")
+      eval("instance_with_more.#{first_assoc.to_s} << j1")
+      eval("instance_with_more.#{first_assoc.to_s}.with_exactly(0, second_assoc)").should == []
+      eval("instance_with_more.#{first_assoc.to_s}.with_exactly(2, second_assoc)").should == []
+    end
+  end
   # context "without" do
   #   it "not return objects with n jokes" do
   #     klass.without(0, first_assoc).should_not include(instance_with_more, instance_with_less)
