@@ -83,20 +83,20 @@ shared_examples_for "an instance-based association filter" do |klass, first_asso
       eval("instance_with_more.#{first_assoc.to_s}.with_exactly(2, second_assoc)").should == []
     end
   end
-  # context "without" do
-  #   it "not return objects with n jokes" do
-  #     klass.without(0, first_assoc).should_not include(instance_with_more, instance_with_less)
-  #   end
-  #   it "return objects with non n factory_name counts" do
-  #     j1 = FactoryGirl.create(factory_name)
-  #     j2 = FactoryGirl.create(factory_name)
-  #     j3 = FactoryGirl.create(factory_name)
-  #     eval("instance_with_more.#{first_assoc.to_s} << [j1, j2, j3]")
-  #     j4 = FactoryGirl.create(factory_name)
-  #     eval("instance_with_less.#{first_assoc.to_s} << j4")
-  #     klass.without(2, first_assoc).should include(instance_with_more, instance_with_less)
-  #   end
-  # end
+  context "without" do
+    it "return objects with non n factory_name counts (+/-) and none with n" do
+      j1 = FactoryGirl.create(factory_name)
+      l1 = FactoryGirl.create(sec_factory)
+      eval("j1.#{second_assoc.to_s} << [l1]")
+      eval("instance_with_more.#{first_assoc.to_s} << j1")
+      eval("instance_with_more.#{first_assoc.to_s}.without(2, second_assoc)").should == [j1]
+      eval("instance_with_more.#{first_assoc.to_s}.without(1, second_assoc)").should == []
+      l2 = FactoryGirl.create(sec_factory)
+      l3 = FactoryGirl.create(sec_factory)
+      eval("j1.#{second_assoc.to_s} << [l2, l3]")
+      eval("instance_with_more.#{first_assoc.to_s}.without(2, second_assoc)").should == [j1]
+    end
+  end
   # context "with_more_than" do
   #   it "not return objects with less than or equal to n jokes" do
   #     klass.with_more_than(0, first_assoc).should_not include(instance_with_more, instance_with_less)
