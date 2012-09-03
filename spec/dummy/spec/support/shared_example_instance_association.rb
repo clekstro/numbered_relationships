@@ -10,7 +10,7 @@ shared_examples_for "an instance-based association filter" do |klass, first_asso
     end
     # instance.association.with_at_least(2, :another_association)
     it "shows no results if lower bound not met" do
-      eval("instance_with_more.#{first_assoc.to_s}.with_at_least(1, second_assoc)").should_not include(instance_with_more)
+      eval("instance_with_more.#{first_assoc.to_s}.with_at_least(1, second_assoc)").should == []
     end
     it "shows results at lower bound" do
     	# Jester, :kingly_courts, :
@@ -30,25 +30,39 @@ shared_examples_for "an instance-based association filter" do |klass, first_asso
       eval("instance_with_more.#{first_assoc.to_s}.with_at_least(1, second_assoc)").should include(j1)
     end
   end
-  # context "with_at_most" do
-  #   it "responds with empty array when no has_many objects" do
-  #     klass.with_at_most(1, first_assoc).should == []
-  #   end
-  #   before(:each) do
-  #     j1 = FactoryGirl.create(factory_name)
-  #     j2 = FactoryGirl.create(factory_name)
-  #     eval("instance_with_more.#{first_assoc.to_s} << [j1, j2]")
-  #   end
-  #   it "shows no results if higher than upper bound" do
-  #     klass.with_at_most(1, first_assoc).should_not include(instance_with_more)
-  #   end
-  #   it "shows results at upper bound" do
-  #     klass.with_at_most(2, first_assoc).should include(instance_with_more)
-  #   end
-  #   it "shows results below upper bound" do
-  #     klass.with_at_most(3, first_assoc).should include(instance_with_more)
-  #   end
-  # end
+  context "with_at_most" do
+    it "responds with empty array when no has_many objects" do
+      eval("instance_with_more.#{first_assoc.to_s}.with_at_most(1, second_assoc)").should == []
+    end
+    before(:each) do
+      j1 = FactoryGirl.create(factory_name)
+      j2 = FactoryGirl.create(factory_name)
+      eval("instance_with_more.#{first_assoc.to_s} << [j1, j2]")
+    end
+    it "shows no results if higher than upper bound" do
+      j1 = FactoryGirl.create(factory_name)
+      l1 = FactoryGirl.create(sec_factory)
+      l2 = FactoryGirl.create(sec_factory)
+      eval("j1.#{second_assoc.to_s} << [l1, l2]")
+      eval("instance_with_more.#{first_assoc.to_s} << j1")
+      eval("instance_with_more.#{first_assoc.to_s}.with_at_most(1, second_assoc)").should == []
+    end
+    it "shows results at upper bound" do
+      j1 = FactoryGirl.create(factory_name)
+      l1 = FactoryGirl.create(sec_factory)
+      eval("j1.#{second_assoc.to_s} << [l1]")
+      eval("instance_with_more.#{first_assoc.to_s} << j1")
+      eval("instance_with_more.#{first_assoc.to_s}.with_at_most(1, second_assoc)").should include(j1)
+    end
+    it "shows results below upper bound" do
+      j1 = FactoryGirl.create(factory_name)
+      l1 = FactoryGirl.create(sec_factory)
+      l2 = FactoryGirl.create(sec_factory)
+      eval("j1.#{second_assoc.to_s} << [l1, l2]")
+      eval("instance_with_more.#{first_assoc.to_s} << j1")
+      eval("instance_with_more.#{first_assoc.to_s}.with_at_most(3, second_assoc)").should include(j1)
+    end
+  end
   # context "with_exactly" do
   #   it "respond with empty array when no has_many objects" do
   #     klass.with_exactly(1, first_assoc).should == []

@@ -15,7 +15,12 @@ describe Jester do
     it_should_behave_like "a class based association filter", Jester, :jokes, :joke
     it_should_behave_like "an instance-based association filter", Jester, :jokes, :joke, :laughs, :laugh
   end
-  describe "habtm" do
+  describe "has_many, :through: " do
+    #it_should_behave_like "a class based association filter", Jester, :jokes, :joke
+    #it_should_behave_like "an instance-based association filter", Jester, :jokes, :joke, :laughs, :laugh
+  end
+  describe "habtm: " do
   	it_should_behave_like "a class based association filter", Jester, :kingly_courts, :kingly_court
+    #it_should_behave_like "an instance-based association filter", Jester, :jokes, :joke, :laughs, :laugh
   end
 end
