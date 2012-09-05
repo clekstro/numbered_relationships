@@ -87,7 +87,7 @@ shared_examples_for "a class based through association filter" do |klass, thru_m
     end
   end
   context "with_more_than" do
-    it "should not return objects with less than or equal to n jokes" do
+    it "should not return objects with less than or equal to n" do
       j1 = thru_model.to_s.classify.constantize.create!
       k1 = FactoryGirl.create(factory_name)
       eval("instance_with_more.#{thru_model.to_s} = j1")
@@ -97,7 +97,7 @@ shared_examples_for "a class based through association filter" do |klass, thru_m
       eval("instance_with_more.#{thru_model.to_s}.#{association_type.to_s} << [k2]")
       klass.with_more_than(2, association_type).should_not include(instance_with_more)
     end
-    it "should return objects with more than n jokes" do
+    it "should return objects with more than n" do
       j1 = thru_model.to_s.classify.constantize.create!
       k1 = FactoryGirl.create(factory_name)
       k2 = FactoryGirl.create(factory_name)
@@ -106,17 +106,23 @@ shared_examples_for "a class based through association filter" do |klass, thru_m
       klass.with_more_than(1,association_type).should include(instance_with_more)
     end
   end
-  # context "with_less_than" do
-  #   it "should not return objects with more than or having n jokes" do
-  #     klass.with_less_than(0, association_type).should_not include(instance_with_more, instance_with_less)
-  #     j1 = FactoryGirl.create(factory_name)
-  #     eval("instance_with_more.#{thru_model.to_s}.#{association_type.to_s} << j1")
-  #     klass.with_less_than(1, association_type).should_not include(instance_with_more, instance_with_less)
-  #   end
-  #   it "should return objects with less than n jokes" do
-  #     j1 = FactoryGirl.create(factory_name)
-  #     eval("instance_with_more.#{thru_model.to_s}.#{association_type.to_s} << j1")
-  #     klass.with_less_than(2, association_type).should include(instance_with_more)
-  #   end
-  # end
+  context "with_less_than" do
+    it "should not return objects with more than or equal to n " do
+      j1 = thru_model.to_s.classify.constantize.create!
+      k1 = FactoryGirl.create(factory_name)
+      eval("instance_with_more.#{thru_model.to_s} = j1")
+      eval("instance_with_more.#{thru_model.to_s}.#{association_type.to_s} << [k1]")
+      klass.with_less_than(1,association_type).should_not include(instance_with_more)
+      k2 = FactoryGirl.create(factory_name)
+      eval("instance_with_more.#{thru_model.to_s}.#{association_type.to_s} << [k2]")
+      klass.with_less_than(1, association_type).should_not include(instance_with_more)
+    end
+    it "should return objects with less than n" do
+      j1 = thru_model.to_s.classify.constantize.create!
+      k1 = FactoryGirl.create(factory_name)
+      eval("instance_with_more.#{thru_model.to_s} = j1")
+      eval("instance_with_more.#{thru_model.to_s}.#{association_type.to_s} << [k1]")
+      klass.with_less_than(2,association_type).should include(instance_with_more)
+    end
+  end
 end
