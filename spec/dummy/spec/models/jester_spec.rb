@@ -1,5 +1,4 @@
 require_relative '../spec_helper'
-require_relative '../../app/models/jester'
 
 describe Jester do
 
@@ -16,11 +15,14 @@ describe Jester do
     it_should_behave_like "an instance-based association filter", Jester, :jokes, :joke, :laughs, :laugh
   end
   describe "has_many, :through: " do
-    #it_should_behave_like "a class based association filter", Jester, :jokes, :joke
+    it_should_behave_like "a class based through association filter", Jester, :repertoire, :performances, :performance
     #it_should_behave_like "an instance-based association filter", Jester, :jokes, :joke, :laughs, :laugh
   end
   describe "habtm: " do
+    # Jester has and belongs to many kingly courts
   	it_should_behave_like "a class based association filter", Jester, :kingly_courts, :kingly_court
-    #it_should_behave_like "an instance-based association filter", Jester, :jokes, :joke, :laughs, :laugh
+    # Jester instance has and belongs to many kingly courts
+    # Kingly courts have and belong to many performances
+    it_should_behave_like "an instance-based association filter", Jester, :kingly_courts, :kingly_court, :performances, :performance
   end
 end
