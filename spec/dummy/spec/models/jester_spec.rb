@@ -16,7 +16,8 @@ describe Jester do
   end
   describe "has_many, :through: " do
     it_should_behave_like "a class based through association filter", Jester, :repertoire, :performances, :performance
-    #it_should_behave_like "an instance-based association filter", Jester, :jokes, :joke, :laughs, :laugh
+    # performance has_many :dramatic_moments :through => :artistic_pauses
+    it_should_behave_like "an instance-based through association filter"
   end
   describe "habtm: " do
     # Jester has and belongs to many kingly courts

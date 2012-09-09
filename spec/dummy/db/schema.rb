@@ -11,7 +11,21 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120904075907) do
+ActiveRecord::Schema.define(:version => 20120905134513) do
+
+  create_table "artistic_pauses", :force => true do |t|
+    t.integer  "duration"
+    t.integer  "performance_id"
+    t.datetime "created_at",     :null => false
+    t.datetime "updated_at",     :null => false
+  end
+
+  create_table "dramatic_moments", :force => true do |t|
+    t.integer  "duration"
+    t.integer  "artistic_pause_id"
+    t.datetime "created_at",        :null => false
+    t.datetime "updated_at",        :null => false
+  end
 
   create_table "jesters", :force => true do |t|
     t.string   "name"
