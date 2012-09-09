@@ -50,15 +50,15 @@ But there's also a larger issue here: jokes are only one possible association.  
 Jester model to include, say, music_instruments -- and to be able to filter on their amount --
 we're back at square one, writing another module for each association.
 
-This gem provides relief. Instead of defining modules with hard-coded method names and queries, it uses the ActiveRecord's reflection capabilities to enable amount-based filtering on all models and, in the future, their associations:
+This gem provides relief. Instead of defining modules with hard-coded method names and queries, it uses ActiveRecord's reflection capabilities to enable amount-based filtering on all models and their associations:
 ```ruby
+# Class-based filters
 Joker.with_at_least(2, :music_instruments)
 Joker.with_at_least(200, :jokes)
 ```
 
-## In the works
-While not fully implemented, the first stable release will allow filtering on associations:
 ```ruby
+# Instance-based association filters
 @first_joker = Joker.find(1)
 @first_joker.jokes.with_at_least(10, :tomatoes)
 ```
@@ -78,16 +78,8 @@ Or install it yourself as:
     $ gem install numbered_relationships
 
 ## Usage
-To gain access to class methods, include the module in your model as shown below:
+This gem extends ActiveRecord, meaning the installation immediately offers the following methods:
 
-```ruby
-class Joker << ActiveRecord::Base
-	include NumberedRelationships::AmountBased
-	has_many :jokes
-end
-```
-
-The Joker class would then have access to the following class methods:
 ```ruby
 Joker.with_at_least(2, :jokes)
 Joker.with_at_most(2, :jokes)
@@ -95,16 +87,16 @@ Joker.with_exactly(2, :jokes)
 Joker.without(2, :jokes)
 Joker.with_more_than(2, :jokes)
 Joker.with_less_than(2, :jokes)
+
+j = Joker.last
+j.jokes.with_at_least(2, :laughs)
+j.jokes.with_at_most(2, :laughs)
+j.jokes.with_exactly(2, :laughs)
+j.jokes.without(2, :laughs)
+j.jokes.with_more_than(2, :laughs)
+j.jokes.with_less_than(2, :laughs)
+
 ```
-
-The gem analyzes the relationship between models through reflection, meaning it should generate the correct SQL regardless of the type of ActiveRecord relationship.  The following relationship macros (in ActiveRecord speak) are currently supported:
-- :has_many
-- :has_many, :through
-- :has_and_belongs_to_many
-
-As filtering isn't merely limited to the class or scope level, filtering on instances of ActiveRecord::Relation is also supported, as long as the module has been registered.
-
-
 ## Contributing
 
 1. Fork it
