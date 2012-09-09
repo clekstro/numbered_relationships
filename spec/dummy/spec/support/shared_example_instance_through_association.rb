@@ -1,38 +1,28 @@
-shared_examples_for "an instance-based through association filter" do 
+shared_examples_for "an instance-based through association filter" do
   let(:instance){ FactoryGirl.create(:jester, name: 'Joker') }
   let(:repertoire) { Repertoire.create! }
   let(:first_performance) { Performance.create(name: 'First Performance') }
+  let(:first_pause) { ArtisticPause.create(duration: 10, performance_id: first_performance.id)}
   let(:last_performance) { Performance.create(name: 'Last Performance') }
   # before(:each) do
-    
+
   # end
   # Params:       klass, primary_association, primary_factory, secondary_association, secondary_factory
   # Sample call: Jester, :repertoire, :performances,      :performance
+  before(:each) do
+    instance.repertoire = repertoire
+    instance.repertoire.performances << [first_performance, last_performance]
+  end
   context ": #with_at_least" do
-    it "responds with empty array when no has_many objects" do
-      instance.repertoire = repertoire
-      instance.repertoire.performances << [first_performance, last_performance]
+    it "shows no results if lower bound not met" do
       instance.performances.with_at_least(1, :dramatic_moments).should == []
     end
-    # instance.association.with_at_least(2, :another_association)
-    # it "shows no results if lower bound not met" do
-    #   eval("instance.#{primary_association.to_s}.with_at_least(1, secondary_association)").should == []
-    # end
-    # it "shows results at lower bound" do
-    #   j1 = FactoryGirl.create(primary_factory)
-    #   l1 = FactoryGirl.create(secondary_factory)
-    #   eval("j1.#{secondary_association.to_s} << l1")
-    #   eval("instance.#{primary_association.to_s} << j1")
-    #   eval("instance.#{primary_association.to_s}.with_at_least(1, secondary_association)").should include(j1)
-    # end
-    # it "shows results above lower bound" do
-    #   j1 = FactoryGirl.create(primary_factory)
-    #   l1 = FactoryGirl.create(secondary_factory)
-    #   l2 = FactoryGirl.create(secondary_factory)
-    #   eval("j1.#{secondary_association.to_s} << [l1, l2]")
-    #   eval("instance.#{primary_association.to_s} << j1")
-    #   eval("instance.#{primary_association.to_s}.with_at_least(1, secondary_association)").should include(j1)
-    # end
+    it "shows results at and above lower bound" do
+      DramaticMoment.create(duration:2, artistic_pause_id: first_pause)
+      instance.performances.with_at_least(1, :dramatic_moments).should include(first_performance)
+      DramaticMoment.create(duration:2, artistic_pause_id: first_pause)
+      instance.performances.with_at_least(1, :dramatic_moments).should include(first_performance)
+    end
   end
   # context "with_at_most" do
   #   it "responds with empty array when no has_many objects" do
