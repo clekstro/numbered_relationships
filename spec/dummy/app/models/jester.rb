@@ -8,5 +8,9 @@ class Jester < ActiveRecord::Base
   def self.funny
   	self.with_at_least(1, :joke)
   end
+
+  def self.experienced
+  	self.with_at_least(2, :performances)
+  end
   
 end

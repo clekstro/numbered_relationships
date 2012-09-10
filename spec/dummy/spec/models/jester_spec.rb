@@ -15,24 +15,27 @@ describe Jester do
 
   describe "syntactic sugar" do
     let(:jester) { FactoryGirl.create(:jester) }
-    it "should allow use of singular associations with natural syntax" do
+    it "should allow use of natural syntax on singular associations" do
       jester.jokes << FactoryGirl.create(:joke)
       Jester.with_at_least(1, :joke).should include(jester)
     end
   end
-  describe "chainability" do
+  describe "chainability: " do
     let(:jester) { FactoryGirl.create(:jester, name: 'J-Man') }
     it "is chainable with other scopes or class methods" do
       jester.jokes << FactoryGirl.create(:joke)
       Jester.with_at_least(1, :joke).where(:name => 'J-Man').should include(jester)
+      p1 = FactoryGirl.create(:performance)
+      p2 = FactoryGirl.create(:performance)
+      rep = Repertoire.create(jester_id: jester)
+      jester.repertoire = rep
+      jester.repertoire.performances << [p1, p2]
+      Jester.funny.experienced.should == [jester]
     end
     it "returns instance of AR::Relation when no match" do
       Jester.with_at_least(1, :joke).where(:name => 'J-Man').should == []
     end
-    it "can be contents of class method filter" do
-      jester.jokes << FactoryGirl.create(:joke)
-      Jester.funny.should == [jester]
-    end
+
   end
   # describe "exceptions" do
   #   it "should throw exception if assocation not present" do
