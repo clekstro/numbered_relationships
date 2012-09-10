@@ -81,7 +81,7 @@ Or install it yourself as:
 This gem extends ActiveRecord, meaning the installation immediately offers the following methods:
 
 ```ruby
-Joker.with_at_least(2, :jokes)
+Joker.with_at_least(1, :joke)
 Joker.with_at_most(2, :jokes)
 Joker.with_exactly(2, :jokes)
 Joker.without(2, :jokes)
@@ -89,11 +89,11 @@ Joker.with_more_than(2, :jokes)
 Joker.with_less_than(2, :jokes)
 
 j = Joker.last
-j.jokes.with_at_least(2, :laughs)
+j.jokes.with_at_least(1, :laugh)
 j.jokes.with_at_most(2, :laughs)
 j.jokes.with_exactly(2, :laughs)
-j.jokes.without(2, :laughs)
-j.jokes.with_more_than(2, :laughs)
+j.jokes.without(11, :laughs)
+j.jokes.with_more_than(18, :laughs)
 j.jokes.with_less_than(2, :laughs)
 
 ```
@@ -103,18 +103,7 @@ A call to a non-existent association will for the moment simply return:
 ```
 
 ## TODO:
-1. Syntax improvements: allow natural use of singular and plural.  The current implementation requires using the plural association symbol regardless of the filter amount:
-```ruby
-Joker.with_at_least(1, :jokes)
-```
-
-instead of a more natural singular/plural use:
-```ruby
-Joker.with_at_least(1, :joke)
-Joker.with_at_least(2, :jokes)
-```
-
-2. Improve exception handling.
+1. Improve exception handling.
 
 ## Contributing
 
