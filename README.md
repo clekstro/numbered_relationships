@@ -16,7 +16,7 @@ class Joker << ActiveRecord::Base
 	end
 end
 ```
-To avoid reptition, we can define an ActiveSupport::Concern and include it in whatever models we'd like:
+But what if we want to filter a jester's jokes as well?  ActiveSupport defines concerns to make module inclusion really simple:
 ```ruby
 module Humor
 	extend ActiveSupport::Concern
@@ -97,6 +97,25 @@ j.jokes.with_more_than(2, :laughs)
 j.jokes.with_less_than(2, :laughs)
 
 ```
+A call to a non-existent association will for the moment simply return:
+```ruby
+[]
+```
+
+## TODO:
+1. Syntax improvements: allow natural use of singular and plural.  The current implementation requires using the plural association symbol regardless of the filter amount:
+```ruby
+Joker.with_at_least(1, :jokes)
+```
+
+instead of a more natural singular/plural use:
+```ruby
+Joker.with_at_least(1, :joke)
+Joker.with_at_least(2, :jokes)
+```
+
+2. Improve exception handling.
+
 ## Contributing
 
 1. Fork it
