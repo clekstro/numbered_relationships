@@ -30,7 +30,7 @@ module NumberedRelationships
 
     def find_related_objects(n, assoc, operator)
       reflection = self.reflect_on_association(assoc) || self.reflect_on_association(assoc.to_s.tableize.to_sym)
-      return [] unless reflection
+      return self.scoped unless reflection
       table = self.name.tableize
       query_related_objects(reflection, n, operator, table).scoped
     end

@@ -62,7 +62,10 @@ Joker.with_at_least(200, :jokes)
 @first_joker = Joker.find(1)
 @first_joker.jokes.with_at_least(10, :tomatoes)
 ```
-
+These also call scoped() on all queries and return an instance of ActiveRecord::Relation, meaning that these methods are chainable:
+```ruby
+@first_joker.performances.with_at_least(10, :dramatic_moments).where(:duration > 10)
+```
 ## Installation
 
 Add this line to your application's Gemfile:
