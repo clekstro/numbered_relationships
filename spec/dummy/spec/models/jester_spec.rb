@@ -29,7 +29,16 @@ describe Jester do
     it "returns instance of AR::Relation when no match" do
       Jester.with_at_least(1, :joke).where(:name => 'J-Man').should == []
     end
+    it "can be contents of class method filter" do
+      jester.jokes << FactoryGirl.create(:joke)
+      Jester.funny.should == [jester]
+    end
   end
+  # describe "exceptions" do
+  #   it "should throw exception if assocation not present" do
+      
+  #   end
+  # end
   describe "has_many relationship: " do
     it_should_behave_like "a class based association filter", Jester, :jokes, :joke
     it_should_behave_like "an instance-based association filter", Jester, :jokes, :joke, :laughs, :laugh
