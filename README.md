@@ -91,7 +91,7 @@ Joker.without(2, :jokes)
 Joker.with_more_than(2, :jokes)
 Joker.with_less_than(2, :jokes)
 
-j = Joker.last
+j = Joker.find(123)
 j.jokes.with_at_least(1, :laugh)
 j.jokes.with_at_most(2, :laughs)
 j.jokes.with_exactly(2, :laughs)
@@ -100,7 +100,33 @@ j.jokes.with_more_than(18, :laughs)
 j.jokes.with_less_than(2, :laughs)
 
 ```
-A call to a non-existent association will for the moment simply return:
+It's also possible to use class methods or scopes defined on the association class:
+```ruby
+Joker.with_at_least(1, [:dirty], :joke)
+
+```
+As long as the class method or scope :dirty is defined on Joker:
+```ruby
+class Joke
+  def self.dirty
+  	where(funny: true)
+  end
+ end
+```
+this code will properly filter the results before attempting to group them.  It outputs the following SQL:
+```sql
+SELECT jesters.* FROM jesters 
+INNER JOIN jokes ON jokes.jester_id = jesters.id 
+WHERE jokes.funny = 't' 
+GROUP BY jesters.id 
+HAVING count(jokes.id) >= 1
+```
+These methods, like all other class methods, are chainable, meaning the following would also work:
+```ruby
+Joker.with_at_least(1, [:dirty, :insulting, :crying_on_the_floor], :joke)
+```
+
+A call to a non-existent association will -- at least for the moment -- simply return:
 ```ruby
 []
 ```
