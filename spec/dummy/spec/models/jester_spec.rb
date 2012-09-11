@@ -36,8 +36,8 @@ describe Jester do
       Jester.with_at_least(1, :joke).where(:name => 'J-Man').should == []
     end
     it "filters on the association when method array specified" do
-      Jester.with_at_least(1, [:dirty], :joke).should == []
       jester.jokes << FactoryGirl.create(:joke, funny: true)
+      Jester.with_at_least(1, [:below_the_belt], :joke).should == []
       Jester.with_at_least(1, [:dirty], :joke).should include(jester)
     end
   end
