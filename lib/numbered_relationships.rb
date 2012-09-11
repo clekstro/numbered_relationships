@@ -2,50 +2,50 @@ module NumberedRelationships
   module AmountFilters
     extend ActiveSupport::Concern
 
-    def with_at_least(n, assoc)
-      find_related_objects(n, assoc, '>=')
+    def with_at_least(n, filters=[], assoc)
+      find_related_objects(n, assoc, '>=', filters)
     end
 
-    def with_at_most(n, assoc)
-      find_related_objects(n, assoc, '<=')
+    def with_at_most(n, filters=[], assoc)
+      find_related_objects(n, assoc, '<=', filters)
     end
 
-    def with_exactly(n, assoc)
-      find_related_objects(n, assoc, '=')
+    def with_exactly(n, filters=[], assoc)
+      find_related_objects(n, assoc, '=', filters)
     end
 
-    def without(n, assoc)
-      find_related_objects(n, assoc, '<>')
+    def without(n, filters=[], assoc)
+      find_related_objects(n, assoc, '<>', filters)
     end
 
-    def with_more_than(n, assoc)
-      find_related_objects(n, assoc, '>')
+    def with_more_than(n, filters=[], assoc)
+      find_related_objects(n, assoc, '>', filters)
     end
 
-    def with_less_than(n, assoc)
-      find_related_objects(n, assoc, '<')
+    def with_less_than(n, filters=[], assoc)
+      find_related_objects(n, assoc, '<', filters)
     end
 
     private
 
-    def find_related_objects(n, assoc, operator)
+    def find_related_objects(n, assoc, operator, filters)
       reflection = self.reflect_on_association(assoc) || self.reflect_on_association(assoc.to_s.tableize.to_sym)
       return self.scoped unless reflection
       table = self.name.tableize
-      query_related_objects(reflection, n, operator, table).scoped
+      query_related_objects(reflection, n, operator, table, filters).scoped
     end
 
-    def query_related_objects(reflection, n, operator, table)
+    def query_related_objects(reflection, n, operator, table, filters)
       case reflection.macro
       when :has_and_belongs_to_many
-        construct_and_execute_habtm_query(reflection, n, operator, table)
+        construct_and_execute_habtm_query(reflection, n, operator, table, filters)
       when :has_many
-        return construct_and_execute_has_many_through_query(reflection, n, operator, table) if reflection.options[:through]
-        construct_and_execute_has_many_query(reflection, n, operator, table)
+        return construct_and_execute_has_many_through_query(reflection, n, operator, table, filters) if reflection.options[:through]
+        construct_and_execute_has_many_query(reflection, n, operator, table, filters)
       end
     end
 
-    def construct_and_execute_habtm_query(reflection, n, operator, table)
+    def construct_and_execute_habtm_query(reflection, n, operator, table, filters)
       foreign_key = reflection.foreign_key
       association = reflection.name
       join_table = self.reflect_on_association(association.to_sym).options[:join_table]
@@ -53,17 +53,32 @@ module NumberedRelationships
       self.joins(association).group("#{table}.id").having("count(#{foreign_key}) #{operator} #{n}")
     end
 
-    def construct_and_execute_has_many_through_query(reflection, n, operator, table)
+    def construct_and_execute_has_many_through_query(reflection, n, operator, table, filters)
       foreign_key = reflection.foreign_key
       association = reflection.name
       through_model = reflection.options[:through]
       self.joins(through_model, association).group("#{table}.id").having("count(#{association.to_s}.id) #{operator} #{n}")
     end
 
-    def construct_and_execute_has_many_query(reflection, n, operator, table)
+    def construct_and_execute_has_many_query(reflection, n, operator, table, filters)
       foreign_key = reflection.foreign_key
       association = reflection.name
-      self.joins(association).group("#{table}.id").having("count(#{association.to_s}.id) #{operator} #{n}")
+      if filters.empty?
+        self.joins(association).group("#{table}.id").having("count(#{association.to_s}.id) #{operator} #{n}")
+      else
+        # figure out way to translate [:funny, :experienced] to instance.funny.experienced
+        # inject(self) {|o, a| o.send(a) }
+        klass = association.to_s.classify.constantize
+        self.joins(association).merge(eval("#{klass}.#{chain_symbols(filters)}")).group("#{table}.id").having("count(#{association.to_s}.id) #{operator} #{n}")
+      end
+      #joins(:messages).merge( Message.unread )
+    end
+    # blatantly copied from StackOverflow: http://stackoverflow.com/questions/4099409/ruby-how-to-chain-multiple-method-calls-together-with-send
+    # def send_chain(arr)
+    #   arr.inject(self) {|o, a| o.send(a) }
+    # end
+    def chain_symbols(symbols)
+    	symbols.map{ |s| s.to_s }.join('.')
     end
   end
 end

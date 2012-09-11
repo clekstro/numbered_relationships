@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120905134513) do
+ActiveRecord::Schema.define(:version => 20120905134450) do
 
   create_table "artistic_pauses", :force => true do |t|
     t.integer  "duration"
