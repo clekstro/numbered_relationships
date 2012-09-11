@@ -40,8 +40,11 @@ module NumberedRelationships
       when :has_and_belongs_to_many
         construct_and_execute_habtm_query(reflection, n, operator, table, filters)
       when :has_many
-        return construct_and_execute_has_many_through_query(reflection, n, operator, table, filters) if reflection.options[:through]
-        construct_and_execute_has_many_query(reflection, n, operator, table, filters)
+      	if reflection.options[:through] 
+        	construct_and_execute_has_many_through_query(reflection, n, operator, table, filters)
+        else
+        	construct_and_execute_has_many_query(reflection, n, operator, table, filters)
+        end
       end
     end
 
@@ -49,34 +52,44 @@ module NumberedRelationships
       foreign_key = reflection.foreign_key
       association = reflection.name
       join_table = self.reflect_on_association(association.to_sym).options[:join_table]
-      return self.joins(association).group("#{table}.id").having("count(#{join_table}.#{foreign_key}) #{operator} #{n}") if join_table
-      self.joins(association).group("#{table}.id").having("count(#{foreign_key}) #{operator} #{n}")
+      if join_table
+      	self.joins(association)
+      			.group("#{table}.id")
+      			.having("count(#{join_table}.#{foreign_key}) #{operator} #{n}")
+      else
+      	self.joins(association)
+      			.group("#{table}.id")
+      			.having("count(#{foreign_key}) #{operator} #{n}")
+      end
     end
 
     def construct_and_execute_has_many_through_query(reflection, n, operator, table, filters)
       foreign_key = reflection.foreign_key
       association = reflection.name
       through_model = reflection.options[:through]
-      self.joins(through_model, association).group("#{table}.id").having("count(#{association.to_s}.id) #{operator} #{n}")
+      self.joins(through_model, association)
+      		.group("#{table}.id")
+      		.having("count(#{association.to_s}.id) #{operator} #{n}")
     end
 
     def construct_and_execute_has_many_query(reflection, n, operator, table, filters)
       foreign_key = reflection.foreign_key
       association = reflection.name
       if filters.empty?
-        self.joins(association).group("#{table}.id").having("count(#{association.to_s}.id) #{operator} #{n}")
+        self.joins(association)
+        		.group("#{table}.id")
+        		.having("count(#{association.to_s}.id) #{operator} #{n}")
       else
         # figure out way to translate [:funny, :experienced] to instance.funny.experienced
         # inject(self) {|o, a| o.send(a) }
         klass = association.to_s.classify.constantize
-        self.joins(association).merge(eval("#{klass}.#{chain_symbols(filters)}")).group("#{table}.id").having("count(#{association.to_s}.id) #{operator} #{n}")
+        self.joins(association)
+        		.merge(eval("#{klass}.#{chain_symbols(filters)}"))
+        		.group("#{table}.id")
+        		.having("count(#{association.to_s}.id) #{operator} #{n}")
       end
-      #joins(:messages).merge( Message.unread )
     end
-    # blatantly copied from StackOverflow: http://stackoverflow.com/questions/4099409/ruby-how-to-chain-multiple-method-calls-together-with-send
-    # def send_chain(arr)
-    #   arr.inject(self) {|o, a| o.send(a) }
-    # end
+    
     def chain_symbols(symbols)
     	symbols.map{ |s| s.to_s }.join('.')
     end
