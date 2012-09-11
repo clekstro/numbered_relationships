@@ -98,7 +98,6 @@ j.jokes.with_exactly(2, :laughs)
 j.jokes.without(11, :laughs)
 j.jokes.with_more_than(18, :laughs)
 j.jokes.with_less_than(2, :laughs)
-
 ```
 It's also possible to use class methods or scopes defined on the association class:
 ```ruby
@@ -111,7 +110,7 @@ class Joke
   def self.dirty
   	where(funny: true)
   end
- end
+end
 ```
 this code will properly filter the results before attempting to group them.  It outputs the following SQL:
 ```sql
