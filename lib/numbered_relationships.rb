@@ -80,8 +80,6 @@ module NumberedRelationships
         		.group("#{table}.id")
         		.having("count(#{association.to_s}.id) #{operator} #{n}")
       else
-        # figure out way to translate [:funny, :experienced] to instance.funny.experienced
-        # inject(self) {|o, a| o.send(a) }
         klass = association.to_s.classify.constantize
         self.joins(association)
         		.merge(eval("#{klass}.#{chain_symbols(filters)}"))
