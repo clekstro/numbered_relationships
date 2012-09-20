@@ -141,4 +141,4 @@ A call to a non-existent association will -- at least for the moment -- simply r
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create new Pull Request
 
-[![Code Climate](https://codeclimate.com/badge.png)](https://codeclimate.com/github/clekstro/numbered_relationships)
+[![Code Climate](https://codeclimate.com/badge.png)](https://codeclimate.com/github/clekstro/numbered_relationships)![Travis CI Status](https://secure.travis-ci.org/clekstro/numbered_relationships.png)
