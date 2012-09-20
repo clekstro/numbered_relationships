@@ -12,7 +12,7 @@ class Joker << ActiveRecord::Base
 	has_many :jokes
 
 	def self.with_at_least_n_jokes(n)
-		self.joins(:jokes).group("jokes.id HAVING count(joker_id) > n")
+		self.joins(:jokes).group("jokes.id HAVING count(joker_id) >= n")
 	end
 end
 ```
@@ -23,7 +23,7 @@ module Humor
 	included do
 		has_many :jokes
 		def with_at_least_n_jokes(n)
-			self.joins(:jokes).group("jokes.id HAVING count(joker_id) > n")
+			self.joins(:jokes).group("jokes.id HAVING count(joker_id) >= n")
 		end
 	end
 end
