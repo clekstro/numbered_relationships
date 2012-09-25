@@ -28,18 +28,25 @@ module NumberedRelationships
       find_related_objects(n, assoc, '<', filters, self)
     end
 
+    private
+
     def find_related_objects(n, assoc, operator, filters, klass)
-      reflection = self.reflect_on_association(assoc) || self.reflect_on_association(assoc.to_s.tableize.to_sym)
-      return self.scoped unless reflection
+      reflection = determine_reflection(klass, assoc)
+      return klass.scoped unless reflection
 
       ConstructorFinder::find({
         n: n,
         operator: operator,
         filters: filters,
-        klass: klass, 
+        klass: klass,
         reflection: reflection
       }).construct
     end
+    
+    def determine_reflection(klass, assoc)
+      klass.reflect_on_association(assoc) || klass.reflect_on_association(assoc.to_s.tableize.to_sym)
+    end
+
   end
 end
 
