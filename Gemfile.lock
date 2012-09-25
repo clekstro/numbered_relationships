@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    numbered_relationships (0.0.1.alpha)
+    numbered_relationships (0.2)
       rails (~> 3.2.7)
 
 GEM
